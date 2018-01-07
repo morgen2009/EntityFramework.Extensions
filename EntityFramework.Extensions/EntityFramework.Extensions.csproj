@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EntityFramework.Extensions</RootNamespace>
     <AssemblyName>EntityFramework.Extensions</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,7 +31,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -40,8 +58,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Annotations\MultipleTriggerAnnotation.cs" />
+    <Compile Include="Annotations\TriggerAnnotation.cs" />
+    <Compile Include="Annotations\TriggerEventEnum.cs" />
+    <Compile Include="Annotations\TriggerTypeEnum.cs" />
+    <Compile Include="Annotations\ValueConstraintAnnotation.cs" />
+    <Compile Include="Generator\MigrationCSharpCodeGeneratorWrapper.cs" />
+    <Compile Include="Generator\CSharpCode\CSharpMigrationCodeGeneratorWrapper.cs" />
+    <Compile Include="Generator\Sql\InverseSqlOperation.cs" />
+    <Compile Include="Generator\Sql\Trigger\ITriggerSqlGenerator.cs" />
+    <Compile Include="Generator\Sql\View\IViewSqlGenerator.cs" />
+    <Compile Include="ViewTypeConfiguration.cs" />
+    <Compile Include="Commons\EncodingUtils.cs" />
+    <Compile Include="Commons\Guard.cs" />
+    <Compile Include="Commons\StreamExtensions.cs" />
+    <Compile Include="ConfigurationExtensions.cs" />
+    <Compile Include="Generator\CSharpCode\TriggerAnnotationCodeGenerator.cs" />
+    <Compile Include="Generator\JsonMetadataAnnotationSerializer.cs" />
+    <Compile Include="Generator\MigrationSqlGeneratorWrapper.cs" />
+    <Compile Include="Generator\IMigrationOperationInterceptor.cs" />
+    <Compile Include="Generator\Sql\Trigger\TriggerSqlGenerator.cs" />
+    <Compile Include="Generator\Sql\View\ViewSqlGenerator.cs" />
+    <Compile Include="Generator\Sql\Trigger\TriggerMigrationInterceptor.cs" />
+    <Compile Include="Generator\Sql\View\ViewMigrationInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Annotations\ViewAnnotation.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
