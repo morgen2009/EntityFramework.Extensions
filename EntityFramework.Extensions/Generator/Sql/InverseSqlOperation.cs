@@ -4,15 +4,15 @@
 
     public class InverseSqlOperation : SqlOperation
     {
-        private readonly string inverseSql;
+        public string InverseSql { get; }
 
         /// <inheritdoc />
         public InverseSqlOperation(string sql, string inverseSql) : base(sql)
         {
-            this.inverseSql = inverseSql;
+            this.InverseSql = inverseSql;
         }
 
         /// <inheritdoc />
-        public override MigrationOperation Inverse => new InverseSqlOperation(this.inverseSql, this.Sql);
+        public override MigrationOperation Inverse => new InverseSqlOperation(this.InverseSql, this.Sql);
     }
 }

@@ -2,7 +2,6 @@
 {
     using System.Data.Entity.Infrastructure.Annotations;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using EntityFramework.Extensions.Annotations;
     using EntityFramework.Extensions.Commons;

@@ -1,4 +1,4 @@
-namespace EntityFramework.Extensions.Tests.Migrations
+namespace EntityFramework.Extensions.FunctionalTests.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;

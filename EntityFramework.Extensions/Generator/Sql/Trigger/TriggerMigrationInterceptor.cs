@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Data.Entity.Migrations.Model;
-    using EntityFramework.Extensions.Annotations;
 
     public class TriggerMigrationInterceptor : IMigrationOperationInterceptor
     {
@@ -21,37 +20,45 @@
         {
             foreach (var operation in operations)
             {
-                if ((operation as CreateTableOperation)?.Annotations.ContainsKey(TriggerAnnotation.AnnotationName) == true)
+                var createTableOperation = operation as CreateTableOperation;
+                if (createTableOperation != null)
                 {
                     yield return operation;
-                    var operation1 = operation as CreateTableOperation;
-                    yield return this.sqlGenerator.CreateTrigger(
-                        operation1.Name,
-                        operation1.Annotations[TriggerAnnotation.AnnotationName] as TriggerAnnotation);
+
+                    if (createTableOperation.Annotations.HasTrigger())
+                    {
+                        yield return this.sqlGenerator.CreateTrigger(createTableOperation.Name, createTableOperation.Annotations.Trigger());
+                    }
+
+                    continue;
                 }
-                else if ((operation as AlterTableOperation)?.Annotations.ContainsKey(TriggerAnnotation.AnnotationName) == true)
+
+                var alterTableOperation = operation as AlterTableOperation;
+                if (alterTableOperation != null)
                 {
-                    yield return operation;
-                    var operation1 = operation as AlterTableOperation;
-                    yield return this.sqlGenerator.DropTrigger(
-                        operation1.Name,
-                        operation1.Annotations[TriggerAnnotation.AnnotationName].OldValue as TriggerAnnotation);
-                    yield return this.sqlGenerator.DropTrigger(
-                        operation1.Name,
-                        operation1.Annotations[TriggerAnnotation.AnnotationName].NewValue as TriggerAnnotation);
+                    if (alterTableOperation.Annotations.HasTrigger())
+                    {
+                        yield return this.sqlGenerator.DropTrigger(alterTableOperation.Name, alterTableOperation.Annotations.OldTrigger());
+                        yield return alterTableOperation;
+                        yield return this.sqlGenerator.CreateTrigger(alterTableOperation.Name, alterTableOperation.Annotations.NewTrigger());
+                        continue;
+                    }
+                    yield return alterTableOperation;
+                    continue;
                 }
-                else if ((operation as DropTableOperation)?.RemovedAnnotations.ContainsKey(TriggerAnnotation.AnnotationName) == true)
+
+                var dropTableOperation = (DropTableOperation) operation;
+                if (dropTableOperation != null)
                 {
+                    if (dropTableOperation.RemovedAnnotations.HasTrigger())
+                    {
+                        yield return this.sqlGenerator.DropTrigger(dropTableOperation.Name, dropTableOperation.RemovedAnnotations.Trigger());
+                    }
                     yield return operation;
-                    var operation1 = operation as DropTableOperation;
-                    yield return this.sqlGenerator.DropTrigger(
-                        operation1.Name,
-                        operation1.RemovedAnnotations[TriggerAnnotation.AnnotationName] as TriggerAnnotation);
+                    continue;
                 }
-                else
-                {
-                    yield return operation;
-                }
+
+                yield return operation;
             }
         }
     }

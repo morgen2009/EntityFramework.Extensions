@@ -1,4 +1,4 @@
-﻿namespace EntityFramework.Extensions.Tests.Fixture
+﻿namespace EntityFramework.Extensions.Tests.Model
 {
     public enum UserTypeEnum
     {

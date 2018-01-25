@@ -7,11 +7,17 @@
 
     public static class AssertHelper
     {
+        /// <summary>
+        /// Creates container with <paramref name="value"/> for further assertions.
+        /// </summary>
         public static AssertContainer<T> That<T>(T value)
         {
             return new AssertContainer<T>(value);
         }
 
+        /// <summary>
+        /// Checks if value in <see cref="AssertContainer{T}"/> is compileable C# code.
+        /// </summary>
         public static AssertContainer<string> IsValidCSharp(this AssertContainer<string> container)
         {
             var result = CompileCode(container.Value);
@@ -21,7 +27,7 @@
             return container;
         }
 
-        public static CompilerResults CompileCode(string code)
+        private static CompilerResults CompileCode(string code)
         {
             CodeDomProvider cpd = new CSharpCodeProvider();
             var cp = new CompilerParameters();

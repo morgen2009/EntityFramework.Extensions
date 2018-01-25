@@ -1,12 +1,15 @@
-﻿namespace EntityFramework.Extensions.Tests
+﻿namespace EntityFramework.Extensions.FunctionalTests
 {
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.Migrations.Design;
+    using System.Data.Entity.Migrations.Model;
     using System.Linq;
     using EntityFramework.Extensions.Annotations;
+    using EntityFramework.Extensions.FunctionalTests.Fixture;
+    using EntityFramework.Extensions.FunctionalTests.Migrations;
     using EntityFramework.Extensions.Generator.CSharpCode;
-    using EntityFramework.Extensions.Tests.Helper;
     using EntityFramework.Extensions.Tests.Model;
     using NSubstitute;
     using NUnit.Framework;
@@ -15,11 +18,19 @@
     public class ConfigurationExtensionsTests
     {
         private MigrationCodeGenerator codeGenerator;
+        private Configuration migrationsConfiguration;
 
         [SetUp]
         public void SetUp()
         {
             this.codeGenerator = Substitute.For<MigrationCodeGenerator>();
+            this.migrationsConfiguration = new Configuration
+            {
+                CodeGenerator = this.codeGenerator,
+                AutomaticMigrationsEnabled = false,
+                ContextType = typeof(DataContextTest)
+            };
+            Database.SetInitializer(new DropCreateDatabaseAlways<DataContextTest>());
         }
 
         [TestCase("Group", "other SQL code")]
@@ -35,12 +46,13 @@
             modelBuilder.Entity<UserEntity>().ToTable("USER");
             modelBuilder.Entity<UserEntity>().HasTrigger(triggerName).After(TriggerEventEnum.Update).HasBody(triggerCode);
 
-            var model = modelBuilder.Build(new DbProviderInfo("System.Data.SqlClient", "2008"));
-
-            var annotations = model.TableAnnotation(typeof(UserEntity));
+            var operations = this.BuildMigrationOperations(modelBuilder);
 
             // assert
-            var annotation = annotations[TriggerAnnotation.AnnotationName] as TriggerAnnotation;
+            var annotation =
+                ((CreateTableOperation) operations.FirstOrDefault(x => x is CreateTableOperation))?.Annotations[
+                    TriggerAnnotation.AnnotationName] as TriggerAnnotation;
+
             Assert.NotNull(annotation);
             Assert.AreEqual(triggerName, annotation.Name);
             Assert.AreEqual(triggerCode, annotation.Body);
@@ -58,15 +70,35 @@
             modelBuilder.Entity<UserEntity>().ToTable(tableName);
             modelBuilder.Entity<UserEntity>().HasTriggers(new TriggerAnnotation(triggerName1), new TriggerAnnotation(triggerName2));
 
-            var model = modelBuilder.Build(new DbProviderInfo("System.Data.SqlClient", "2008"));
-
-            var annotations = model.TableAnnotation(typeof(UserEntity));
+            var operations = this.BuildMigrationOperations(modelBuilder);
 
             // assert
-            var annotation = annotations[TriggerAnnotation.AnnotationName] as MultipleTriggerAnnotation;
+            var annotation =
+                ((CreateTableOperation)operations.FirstOrDefault(x => x is CreateTableOperation))?.Annotations[
+                    TriggerAnnotation.AnnotationName] as MultipleTriggerAnnotation;
             Assert.NotNull(annotation);
             Assert.AreEqual(triggerName1, annotation.Triggers.First().Name);
             Assert.AreEqual(triggerName2, annotation.Triggers.Last().Name);
+        }
+
+        private IEnumerable<MigrationOperation> BuildMigrationOperations(DbModelBuilder modelBuilder)
+        {
+            var providerInfo = new DbProviderInfo("System.Data.SqlClient", "2008");
+            var dbModel = modelBuilder.Build(providerInfo);
+            var model = dbModel.Compile();
+            DataContextFactoryTest.Model = model;
+
+            var migrationOperations = new List<MigrationOperation>();
+            this.codeGenerator.Generate(null, null, null, null, null, null).ReturnsForAnyArgs(x =>
+            {
+                migrationOperations.AddRange(x.Arg<IEnumerable<MigrationOperation>>());
+                return new ScaffoldedMigration();
+            });
+
+            var scaffolder = new MigrationScaffolder(this.migrationsConfiguration);
+            scaffolder.Scaffold("initial migration");
+
+            return migrationOperations;
         }
     }
 }

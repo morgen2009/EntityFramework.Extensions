@@ -7,6 +7,7 @@
         /// <inheritdoc />
         public MigrationOperationHelper() : base(null)
         {
+            this.IsDestructiveChange = false;
         }
 
         /// <inheritdoc />

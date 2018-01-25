@@ -1,7 +1,7 @@
 ﻿namespace EntityFramework.Extensions.Tests.Generator
 {
     using EntityFramework.Extensions.Generator;
-    using EntityFramework.Extensions.Tests.Fixture;
+    using EntityFramework.Extensions.Tests.Model;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,7 +22,7 @@
                     Name = "Some name",
                     Type = UserTypeEnum.SuperAdmin
                 },
-                "{\"$type\":\"EntityFramework.Extensions.Tests.Fixture.UserEntity, EntityFramework.Extensions.Tests\",\"Id\":1,\"Name\":\"Some name\",\"Type\":2}"
+                "{\"$type\":\"EntityFramework.Extensions.Tests.Model.UserEntity, EntityFramework.Extensions.Tests\",\"Id\":1,\"Name\":\"Some name\",\"Type\":2}"
             ),
             new TestCaseData(new UserEntity
                 {
@@ -30,7 +30,7 @@
                     Name = "Other",
                     Type = UserTypeEnum.Admin
                 },
-                "{\"$type\":\"EntityFramework.Extensions.Tests.Fixture.UserEntity, EntityFramework.Extensions.Tests\",\"Id\":2,\"Name\":\"Other\",\"Type\":1}"
+                "{\"$type\":\"EntityFramework.Extensions.Tests.Model.UserEntity, EntityFramework.Extensions.Tests\",\"Id\":2,\"Name\":\"Other\",\"Type\":1}"
             ),
         };
 

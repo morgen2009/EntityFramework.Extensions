@@ -63,8 +63,9 @@
     <Compile Include="Annotations\TriggerEventEnum.cs" />
     <Compile Include="Annotations\TriggerTypeEnum.cs" />
     <Compile Include="Annotations\ValueConstraintAnnotation.cs" />
+    <Compile Include="Generator\Sql\View\DictionaryExtensions.cs" />
+    <Compile Include="Generator\Sql\Trigger\DictionaryExtensions.cs" />
     <Compile Include="Generator\MigrationCSharpCodeGeneratorWrapper.cs" />
-    <Compile Include="Generator\CSharpCode\CSharpMigrationCodeGeneratorWrapper.cs" />
     <Compile Include="Generator\Sql\InverseSqlOperation.cs" />
     <Compile Include="Generator\Sql\Trigger\ITriggerSqlGenerator.cs" />
     <Compile Include="Generator\Sql\View\IViewSqlGenerator.cs" />

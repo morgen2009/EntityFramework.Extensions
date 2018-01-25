@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Data.Entity.Migrations.Model;
-    using EntityFramework.Extensions.Annotations;
 
     public class ViewMigrationInterceptor : IMigrationOperationInterceptor
     {
@@ -20,29 +19,34 @@
         {
             foreach (var operation in operations)
             {
-                if ((operation as CreateTableOperation)?.Annotations.ContainsKey(ViewAnnotation.AnnotationName) == true)
+                var createTableOperation = operation as CreateTableOperation;
+                if (createTableOperation != null && createTableOperation.Annotations.HasView())
                 {
-                    var operation1 = operation as CreateTableOperation;
-                    yield return this.sqlGenerator.CreateView(operation1.Name, (ViewAnnotation)operation1.Annotations[ViewAnnotation.AnnotationName]);
+                    yield return this.sqlGenerator.CreateView(createTableOperation.Name, createTableOperation.Annotations.View());
+                    continue;
                 }
-                else if ((operation as AlterTableOperation)?.Annotations.ContainsKey(ViewAnnotation.AnnotationName) == true)
+
+                var alterTableOperation = operation as AlterTableOperation;
+                if (alterTableOperation != null && alterTableOperation.Annotations.HasView())
                 {
-                    var operation1 = operation as AlterTableOperation;
-                    yield return this.sqlGenerator.AlterView(operation1.Name, (ViewAnnotation)operation1.Annotations[ViewAnnotation.AnnotationName].OldValue, (ViewAnnotation)operation1.Annotations[ViewAnnotation.AnnotationName].NewValue);
+                    yield return this.sqlGenerator.AlterView(alterTableOperation.Name, alterTableOperation.Annotations.OldView(), alterTableOperation.Annotations.NewView());
+                    continue;
                 }
-                else if (operation is RenameTableOperation)
+
+                if (operation is RenameTableOperation)
                 {
                     yield return this.sqlGenerator.RenameView((operation as RenameTableOperation).Name, (operation as RenameTableOperation).NewName);
+                    continue;
                 }
-                else if ((operation as DropTableOperation)?.RemovedAnnotations.ContainsKey(ViewAnnotation.AnnotationName) == true)
+
+                var dropTableOperation = operation as DropTableOperation;
+                if (dropTableOperation != null && dropTableOperation.RemovedAnnotations.HasView())
                 {
-                    var operation1 = operation as DropTableOperation;
-                    yield return this.sqlGenerator.DropView(operation1.Name, (ViewAnnotation)operation1.RemovedAnnotations[ViewAnnotation.AnnotationName]);
+                    yield return this.sqlGenerator.DropView(dropTableOperation.Name, dropTableOperation.RemovedAnnotations.View());
+                    continue;
                 }
-                else
-                {
-                    yield return operation;
-                }
+
+                yield return operation;
             }
         }
     }

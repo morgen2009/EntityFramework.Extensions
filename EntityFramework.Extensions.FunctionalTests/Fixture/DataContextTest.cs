@@ -1,4 +1,4 @@
-namespace EntityFramework.Extensions.Tests.Fixture
+namespace EntityFramework.Extensions.FunctionalTests.Fixture
 {
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
