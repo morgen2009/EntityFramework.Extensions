@@ -5,7 +5,7 @@ check constraints, permissions, because of some whom opinion that this informati
 least for enterprise applications. I like EF, but missing such features makes me difficult synchronization of C# source code and
 database, or arrangement of automatic software deployment to the customers systems.
 
-Vision
+Features
 
 * automatic migrations for triggers
 * automatic migrations for views
